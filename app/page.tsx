@@ -5,12 +5,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Plus,
-  Trash2,
-  Edit2,
-  CheckCircle,
-  Clock,
+import { 
+  Plus, 
+  Trash2, 
+  Edit2, 
+  CheckCircle, 
+  Clock, 
   AlertCircle,
   Calendar,
   Filter,
@@ -21,12 +21,9 @@ import { format, isToday, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Footer from '@/components/layout/footer';
 import pb from '@/lib/pocketbase';
-import { ClientResponseError } from 'pocketbase';
 
-type PocketBaseClientResponseError = ClientResponseError & { code?: number };
-
-type TaskStatus = 'pending' | 'in_progress' | 'completed';
-type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+type TaskStatus='pending' | 'in_progress' | 'completed';
+type TaskPriority='low' | 'medium' | 'high' | 'urgent';
 
 interface Task {
   id: string;
@@ -141,17 +138,17 @@ const buildPocketBasePayload = (data: TaskFormData, userId: string) => ({
   user: userId
 });
 
-type FilterType = 'all' | 'pending' | 'completed' | 'high';
+type FilterType='all' | 'pending' | 'completed' | 'high';
 
 export default function HomePage() {
-  const [tasks, setTasks] = useState < Task[] > ([]);
-  const [filter, setFilter] = useState < FilterType > ('all');
-  const [editingTask, setEditingTask] = useState < Task | null > (null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState < string | null > (null);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [filter, setFilter] = useState<FilterType>('all');
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
 
-  const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm < TaskFormData > ({
+  const { register, handleSubmit, reset, formState: { errors }, setValue } = useForm<TaskFormData>({
     resolver: zodResolver(taskSchema),
     defaultValues: {
       title: '',
@@ -165,18 +162,11 @@ export default function HomePage() {
   const loadTasks = useCallback(async () => {
     setIsLoading(true);
     try {
-      const records = await pb.collection('nueva_tarea').getFullList < PocketBaseTaskRecord > ({
+      const records = await pb.collection('nueva_tarea').getFullList<PocketBaseTaskRecord>({
         sort: '-created'
       });
       setTasks(records.map(mapRecordToTask));
     } catch (error) {
-      if (
-        error instanceof ClientResponseError &&
-        (error as PocketBaseClientResponseError).code === 0
-      ) {
-        console.debug('Carga de tareas cancelada automáticamente, ignorando.');
-        return;
-      }
       console.error('Error cargando tareas:', error);
     } finally {
       setIsLoading(false);
@@ -311,7 +301,7 @@ export default function HomePage() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 shadow-lg"
@@ -327,7 +317,7 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -344,7 +334,7 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -361,7 +351,7 @@ export default function HomePage() {
             </div>
           </motion.div>
 
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -385,22 +375,23 @@ export default function HomePage() {
           <div className="lg:col-span-2">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
               <h2 className="text-2xl font-bold">Mis Tareas</h2>
-
+              
               <div className="flex flex-wrap gap-2">
                 {(['all', 'pending', 'completed', 'high'] as FilterType[]).map((filterType) => (
                   <button
                     key={filterType}
                     onClick={() => setFilter(filterType)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${filter === filterType
-                        ? filterType === 'high'
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      filter === filterType
+                        ? filterType === 'high' 
                           ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                           : filterType === 'completed'
-                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            : filterType === 'pending'
-                              ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                              : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                          : filterType === 'pending'
+                          ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
+                          : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
                         : 'bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 border border-gray-700'
-                      }`}
+                    }`}
                   >
                     {filterType === 'all' && 'Todas'}
                     {filterType === 'pending' && 'Pendientes'}
@@ -443,19 +434,21 @@ export default function HomePage() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
-                      className={`bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border ${isOverdue(task.dueDate) && task.status !== 'completed'
+                      className={`bg-gray-800/50 backdrop-blur-sm rounded-xl p-5 border ${
+                        isOverdue(task.dueDate) && task.status !== 'completed'
                           ? 'border-red-500/50'
                           : 'border-gray-700'
-                        } shadow-lg hover:shadow-xl transition-shadow`}
+                      } shadow-lg hover:shadow-xl transition-shadow`}
                     >
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-3">
                           <button
                             onClick={() => handleToggleComplete(task.id)}
-                            className={`p-1 rounded ${task.status === 'completed'
+                            className={`p-1 rounded ${
+                              task.status === 'completed'
                                 ? 'text-green-400 bg-green-400/10'
                                 : 'text-gray-400 hover:text-green-400 hover:bg-green-400/10'
-                              }`}
+                            }`}
                           >
                             {task.status === 'completed' ? (
                               <CheckCircle size={20} />
@@ -463,10 +456,11 @@ export default function HomePage() {
                               <Square size={20} />
                             )}
                           </button>
-                          <h3 className={`font-semibold ${task.status === 'completed'
+                          <h3 className={`font-semibold ${
+                            task.status === 'completed'
                               ? 'line-through text-gray-500'
                               : 'text-white'
-                            }`}>
+                          }`}>
                             {task.title}
                           </h3>
                         </div>
@@ -493,12 +487,13 @@ export default function HomePage() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 rounded text-xs ${task.status === 'completed'
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            task.status === 'completed'
                               ? 'bg-green-500/20 text-green-400'
                               : task.status === 'in_progress'
-                                ? 'bg-blue-500/20 text-blue-400'
-                                : 'bg-orange-500/20 text-orange-400'
-                            }`}>
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-orange-500/20 text-orange-400'
+                          }`}>
                             {statusLabels[task.status]}
                           </span>
 

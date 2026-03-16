@@ -6,6 +6,9 @@ export function getPocketBaseUrl(): string {
 }
 
 const pb = new PocketBase(getPocketBaseUrl());
+// El SDK cancela automáticamente solicitudes duplicadas, así que desactivamos
+// ese comportamiento para evitar errores 0 cuando el usuario abre/recarga la página.
+pb.autoCancellation(false);
 
 /** Opciones por defecto para la cookie de sesión (reutilizable) */
 export const authCookieOptions = {
